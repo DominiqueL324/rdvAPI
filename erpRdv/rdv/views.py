@@ -34,10 +34,17 @@ class RDVApi(APIView):
 
         if(request.GET.get("user",None) is not None):
             val_ = request.GET.get("user",None)
-            #users = User.objects.filter(email=val_)
-            rdvs = RendezVous.objects.filter(client=val_)
-            serializer = RendezVousSerializer(rdvs,many=True)
-            return Response(serializer.data,status=status.HTTP_200_OK)
+            query_set = RendezVous.objects.filter(client=int(val_))
+            page = self.paginator.paginate_queryset(query_set,request,view=self)
+            serializer = RendezVousSerializer(page,many=True)
+            return self.paginator.get_paginated_response(serializer.data)
+
+        if(request.GET.get("agent",None) is not None):
+            val_ = request.GET.get("agent",None)
+            query_set = RendezVous.objects.filter(agent=int(val_))
+            page = self.paginator.paginate_queryset(query_set,request,view=self)
+            serializer = RendezVousSerializer(page,many=True)
+            return self.paginator.get_paginated_response(serializer.data)
 
         page = self.paginator.paginate_queryset(self.queryset,request,view=self)
         """if page is not None:
@@ -181,6 +188,9 @@ class RDVApiDetails(APIView):
                 rdv.agent = int(data['agent'])
                 rdv.longitude = data['longitude']
                 rdv.latitude = data['latitude']
+                rdv.liste_document_recuperer = data['consignes_part'] 
+                rdv.consignes_particuliere = data['list_documents']
+                rdv.info_diverses = data['info_diverses']
                 rdv.save()
 
                 if rdv.agent != old_agent:
