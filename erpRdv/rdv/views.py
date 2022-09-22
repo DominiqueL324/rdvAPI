@@ -89,6 +89,24 @@ class RDVApi(APIView):
                 type = data["type"],
                 type_propriete = TypePropriete.objects.filter(pk=int(data['type_propriete'])).first()
             )
+            statut_ = ""
+            couleur = ""
+            if data['statut'] == 1:
+                statut_ = "Attente prise en charge"
+                couleur="red"
+            elif data['statut'] == 2:
+                statut_ = "Attente confirmation horaire"
+                couleur="orange"
+            elif data['statut'] == 3:
+                statut_ = "Modifié"
+                couleur="blue"
+            elif data['statut'] == 4:
+                statut_ = "Annule"
+                couleur="yellow"
+            else:
+                statut_ = "Realise"
+                couleur="purple"
+
 
             #création du RDV
             rdv = RendezVous.objects.create(
@@ -104,7 +122,9 @@ class RDVApi(APIView):
                 latitude = data['latitude'],
                 consignes_particuliere = data['consignes_part'],
                 liste_document_recuperer= data['list_documents'],
-                info_diverses = data['info_diverses']
+                info_diverses = data['info_diverses'],
+                statut=statut_,
+                couleur = couleur
             )
             rdv = RendezVous.objects.filter(pk=rdv.id)
             serializer = RendezVousSerializer(rdv,many=True)
@@ -177,8 +197,28 @@ class RDVApiDetails(APIView):
                 propriete.type_propriete = TypePropriete.objects.filter(pk=int(data['type_propriete'])).first()
                 propriete.save()
 
+                statut_=""
+                couleur = ""
+                if data['statut'] == 1:
+                    statut_ = "Attente prise en charge"
+                    couleur="red"
+                elif data['statut'] == 2:
+                    statut_ = "Attente confirmation horaire"
+                    couleur="orange"
+                elif data['statut'] == 3:
+                    statut_ = "Modifié"
+                    couleur="blue"
+                elif data['statut'] == 4:
+                    statut_ = "Annule"
+                    couleur="yellow"
+                else:
+                    statut_ = "Realise"
+                    couleur="purple"
+
                 #edition du RDV
                 rdv.ref_lot = data['ref_lot']
+                rdv.statut = statut_
+                rdv.couleur = couleur
                 rdv.ref_rdv_edl = data['ref_edl']
                 rdv.intervention = TypeIntervention.objects.filter(pk=int(data['intervention'])).first()
                 rdv.propriete = propriete

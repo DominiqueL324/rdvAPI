@@ -65,6 +65,8 @@ class RendezVous(models.Model):
     liste_document_recuperer = models.CharField("liste de document à recupérer",max_length=200,null=True)
     consignes_particuliere = models.CharField("Consignes particulière",max_length=200,null=True)
     info_diverses = models.CharField("Informations diverses",max_length=300,null=True)
+    statut = models.CharField('Statut du RDV',max_length=30,default="Attente prise en charge")
+    couleur = models.CharField('couleur du RDV',max_length=30,default="red")
 
 class RdvReporteDate(models.Model):
     rdv = models.ForeignKey(RendezVous,on_delete=models.CASCADE,related_name="Rendez_vous_date")
