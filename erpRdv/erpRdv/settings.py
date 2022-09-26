@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rdv',
     'intervention',
     'type_propriete',
+    'import',
 ]
 
 MIDDLEWARE = [
@@ -131,3 +132,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE':10
 }
+
+#email config
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "saravincent@amexpert.biz "
+EMAIL_HOST_PASSWORD = "Luc123!luc123!"

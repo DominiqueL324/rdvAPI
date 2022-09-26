@@ -82,6 +82,8 @@ class ProprieteRepresentation(serializers.RelatedField):
             "numeroCave":value.numeroCave,
             "type":value.type,
             "numeroSol":  value.numeroSol,
+            'bailleur':{"nom":value.bailleur.nom,"prenom":value.bailleur.prenom,"email":value.bailleur.email,"reference":value.bailleur.reference},
+            'locataire':{"nom":value.locataire.nom,"prenom":value.locataire.prenom,"email":value.locataire.email,"telephone":value.locataire.telephone}
 
         }
         return result

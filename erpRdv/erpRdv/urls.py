@@ -21,4 +21,5 @@ urlpatterns = [
     path('rdv_app/',include('rdv.url')),
     path('intervention_app/',include('intervention.url')),
     path('type_propriete_app/',include('type_propriete.url')),
+    path('import_app/',include('import.url')),
 ]

@@ -22,6 +22,7 @@ from rest_framework.authtoken.models import Token
 from datetime import date, datetime,time,timedelta
 from django.db import transaction, IntegrityError
 from rest_framework.pagination import LimitOffsetPagination,PageNumberPagination
+from django.core.mail import send_mail
 
 class RDVApi(APIView):
 
@@ -31,6 +32,31 @@ class RDVApi(APIView):
     paginator = pagination_class()
 
     def get(self,request):
+
+        if(request.GET.get('clientcount',None) is not None):
+            val_ = request.GET.get("clientcount",None)
+            rdv = RendezVous.objects.filter(client=int(val_)).count()
+            return JsonResponse({"Rdv":rdv},status=200)
+
+        if(request.GET.get('agentcount',None) is not None):
+            val_ = request.GET.get("agentcount",None)
+            rdv = RendezVous.objects.filter(agent=int(val_)).count()
+            return JsonResponse({"Rdv":rdv},status=200)
+
+        if(request.GET.get('salariecount',None) is not None):
+            val_ = request.GET.get("salariecount",None)
+            rdv = RendezVous.objects.filter(passeur=int(val_)).count()
+            return JsonResponse({"Rdv":rdv},status=200)
+
+        if(request.GET.get('agentcountconst',None) is not None):
+            val_ = request.GET.get("agentcountconst",None)
+            rdv = RendezVous.objects.filter(agent_constat=val_).count()
+            return JsonResponse({"Rdv":rdv},status=200)
+
+        if(request.GET.get('admincount',None) is not None):
+            rdv = RendezVous.objects.count()
+            return JsonResponse({"Rdv":rdv},status=200)
+
 
         if(request.GET.get("user",None) is not None):
             val_ = request.GET.get("user",None)
@@ -117,7 +143,7 @@ class RDVApi(APIView):
                 client = int(data['client']),
                 date = data['date'],
                 passeur = int(data['passeur']),
-                agent = int(data['agent']),
+                agent = request.POST.get('agent',None),
                 longitude = data['longitude'],
                 latitude = data['latitude'],
                 consignes_particuliere = data['consignes_part'],
