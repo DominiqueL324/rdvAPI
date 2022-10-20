@@ -77,13 +77,16 @@ class ProprieteRepresentation(serializers.RelatedField):
             "numeroParking": value.numeroParking,
             "adresse":value.adresse,
             "codePostal": value.codePostal,
+            "ancien_locataire": value.ancien_locataire,
+            "date_sortie_ancien_locataire": value.date_sortie_ancien_locataire,
             "ville":value.ville,
             "adresseComplementaire": value.adresseComplementaire,
             "numeroCave":value.numeroCave,
             "type":value.type,
             "numeroSol":  value.numeroSol,
             'bailleur':{"nom":value.bailleur.nom,"prenom":value.bailleur.prenom,"email":value.bailleur.email,"reference":value.bailleur.reference},
-            'locataire':{"nom":value.locataire.nom,"prenom":value.locataire.prenom,"email":value.locataire.email,"telephone":value.locataire.telephone}
+            'locataire':{"nom":value.locataire.nom,"prenom":value.locataire.prenom,"email":value.locataire.email,"telephone":value.locataire.telephone},
+            "type_propriete": {"type": value.propriete.type_propriete.type,"statut":value.propriete.type_propriete.statut,"id":value.propriete.type_propriete.id },
 
         }
         return result
@@ -121,6 +124,8 @@ class rendezVousRepresentation(serializers.RelatedField):
                             "ville":value.propriete.ville,
                             "type": value.propriete.type,
                             "adresseComplementaire": value.propriete.adresseComplementaire,
+                            "ancien_locataire": value.ancien_locataire,
+                            "date_sortie_ancien_locataire": value.date_sortie_ancien_locataire,
                             "numeroCave":value.propriete.numeroCave,
                             "numeroSol":  value.propriete.numeroSol,
                             "type" : value.propriete.type,

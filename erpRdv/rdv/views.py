@@ -60,14 +60,42 @@ class RDVApi(APIView):
 
         if(request.GET.get("user",None) is not None):
             val_ = request.GET.get("user",None)
-            query_set = RendezVous.objects.filter(client=int(val_))
+            query_set=""
+            if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
+                query_set = RendezVous.objects.filter(client=int(val_),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
+            else:
+                query_set = RendezVous.objects.filter(client=int(val_))
+
             page = self.paginator.paginate_queryset(query_set,request,view=self)
             serializer = RendezVousSerializer(page,many=True)
             return self.paginator.get_paginated_response(serializer.data)
 
         if(request.GET.get("agent",None) is not None):
             val_ = request.GET.get("agent",None)
-            query_set = RendezVous.objects.filter(agent=int(val_))
+            query_set=""
+            if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
+                 query_set = RendezVous.objects.filter(agent=int(val_),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
+            else:
+                query_set = RendezVous.objects.filter(agent=int(val_))
+
+            page = self.paginator.paginate_queryset(query_set,request,view=self)
+            serializer = RendezVousSerializer(page,many=True)
+            return self.paginator.get_paginated_response(serializer.data)
+
+        if(request.GET.get("passeur",None) is not None):
+            val_ = request.GET.get("passeur",None)
+            query_set=""
+            if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
+                query_set = RendezVous.objects.filter(passeur=int(val_),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
+            else:
+                query_set = RendezVous.objects.filter(passeur=int(val_))
+
+            page = self.paginator.paginate_queryset(query_set,request,view=self)
+            serializer = RendezVousSerializer(page,many=True)
+            return self.paginator.get_paginated_response(serializer.data)
+
+        if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
+            query_set = RendezVous.objects.filter(date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
             page = self.paginator.paginate_queryset(query_set,request,view=self)
             serializer = RendezVousSerializer(page,many=True)
             return self.paginator.get_paginated_response(serializer.data)
@@ -115,23 +143,23 @@ class RDVApi(APIView):
                 type = data["type"],
                 type_propriete = TypePropriete.objects.filter(pk=int(data['type_propriete'])).first()
             )
-            statut_ = ""
             couleur = ""
-            if data['statut'] == 1:
+            statut_=""
+            if int(data['statut']) == 1:
                 statut_ = "Attente prise en charge"
                 couleur="red"
-            elif data['statut'] == 2:
-                statut_ = "Attente confirmation horaire"
+            elif int(data['statut']) == 2:
+                statut_ = "Prise en charge Attente horaire"
                 couleur="orange"
-            elif data['statut'] == 3:
-                statut_ = "Modifié"
+            elif int(data['statut']) == 3:
+                statut_ = "Action requise"
                 couleur="blue"
-            elif data['statut'] == 4:
+            elif int(data['statut']) == 4:
                 statut_ = "Annule"
                 couleur="yellow"
             else:
-                statut_ = "Realise"
-                couleur="purple"
+                statut_ = "Organise"
+                couleur="green"
 
 
             #création du RDV
@@ -142,8 +170,8 @@ class RDVApi(APIView):
                 propriete = propriete,
                 client = int(data['client']),
                 date = data['date'],
-                passeur = int(data['passeur']),
-                agent = request.POST.get('agent',None),
+                #passeur = int(data['passeur']),
+                #agent = request.POST.get(),
                 longitude = data['longitude'],
                 latitude = data['latitude'],
                 consignes_particuliere = data['consignes_part'],
@@ -152,6 +180,22 @@ class RDVApi(APIView):
                 statut=statut_,
                 couleur = couleur
             )
+            if request.POST.get("passeur",None) is not None:
+                rdv.passeur = int(data['passeur'])
+            
+            if request.POST.get("agent",None) is not None:
+                rdv.agent = int(data['agent'])
+            
+            if request.POST.get("agent_constat",None) is not None:
+                rdv.agent_constat = int(data['agent_constat'])
+
+            if request.POST.get("audit_planneur",None) is not None:
+                rdv.passeur = int(data['audit_planneur'])
+
+
+
+            rdv.save()
+                
             rdv = RendezVous.objects.filter(pk=rdv.id)
             serializer = RendezVousSerializer(rdv,many=True)
             return Response(serializer.data,status=status.HTTP_201_CREATED)
@@ -225,21 +269,21 @@ class RDVApiDetails(APIView):
 
                 statut_=""
                 couleur = ""
-                if data['statut'] == 1:
+                if int(data['statut']) == 1:
                     statut_ = "Attente prise en charge"
                     couleur="red"
-                elif data['statut'] == 2:
-                    statut_ = "Attente confirmation horaire"
+                elif int(data['statut']) == 2:
+                    statut_ = "Prise en charge Attente horaire"
                     couleur="orange"
-                elif data['statut'] == 3:
-                    statut_ = "Modifié"
+                elif int(data['statut']) == 3:
+                    statut_ = "Action requise"
                     couleur="blue"
-                elif data['statut'] == 4:
+                elif int(data['statut']) == 4:
                     statut_ = "Annule"
                     couleur="yellow"
                 else:
-                    statut_ = "Realise"
-                    couleur="purple"
+                    statut_ = "Organise"
+                    couleur="green"
 
                 #edition du RDV
                 rdv.ref_lot = data['ref_lot']
@@ -250,14 +294,26 @@ class RDVApiDetails(APIView):
                 rdv.propriete = propriete
                 rdv.client = int(data['client'])
                 rdv.date = data['date']
-                rdv.passeur = int(data['passeur'])
-                rdv.agent = int(data['agent'])
+                rdv.passeur = request.POST.get("passeur",None)
+                rdv.agent = request.POST.get("agent",None)
                 rdv.longitude = data['longitude']
                 rdv.latitude = data['latitude']
                 rdv.liste_document_recuperer = data['consignes_part'] 
                 rdv.consignes_particuliere = data['list_documents']
                 rdv.info_diverses = data['info_diverses']
                 rdv.save()
+
+                if request.POST.get("passeur",None) is not None:
+                    rdv.passeur = int(data['passeur'])
+                
+                if request.POST.get("agent",None) is not None:
+                    rdv.agent = int(data['agent'])
+                
+                if request.POST.get("agent_constat",None) is not None:
+                    rdv.agent_constat = int(data['agent_constat'])
+
+                if request.POST.get("audit_planneur",None) is not None:
+                    rdv.passeur = int(data['audit_planneur'])
 
                 if rdv.agent != old_agent:
                     RdvReporteAgent.objects.create(

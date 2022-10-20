@@ -89,76 +89,77 @@ class ImportApi(APIView):
                      if liste[u] == "NULL":
                         liste[u] = None
                 with transaction.atomic():
-                    bailleur = Bailleur.objects.create(
-                        nom = liste[14],
-                        prenom = liste[15],
-                        email = liste[16],
-                        reference = liste[13],
-                    )
-                    locataire = Locataire.objects.create(
-                        nom = liste[28],
-                        prenom = liste[29],
-                        email = liste[31],
-                        telephone= liste[30],
-                    )
+                    if CreatedDate.year == 2022:
+                        bailleur = Bailleur.objects.create(
+                            nom = liste[14],
+                            prenom = liste[15],
+                            email = liste[16],
+                            reference = liste[13],
+                        )
+                        locataire = Locataire.objects.create(
+                            nom = liste[28],
+                            prenom = liste[29],
+                            email = liste[31],
+                            telephone= liste[30],
+                        )
                     
-                    propriete = Propriete.objects.create(
-                        surface = liste[18],
-                        numero= liste[21],
-                        numeroParking= liste[22],
-                        adresse = liste[24],
-                        codePostal= liste[26],
-                        ville = liste[27],
-                        adresseComplementaire= liste[25],
-                        numeroCave =liste[23] ,
-                        numeroSol = liste[20],
-                        bailleur =bailleur,
-                        locataire = locataire,
-                        type = liste[19],
-                        ancien_locataire = liste[32],
-                    ) 
+                        propriete = Propriete.objects.create(
+                            surface = liste[18],
+                            numero= liste[21],
+                            numeroParking= liste[22],
+                            adresse = liste[24],
+                            codePostal= liste[26],
+                            ville = liste[27],
+                            adresseComplementaire= liste[25],
+                            numeroCave =liste[23] ,
+                            numeroSol = liste[20],
+                            bailleur =bailleur,
+                            locataire = locataire,
+                            type = liste[19],
+                            ancien_locataire = liste[32],
+                        ) 
 
-                    if liste[33] is not None:
-                        propriete.date_sortie_ancien_locataire = datetime(*xlrd.xldate_as_tuple(liste[33],data.datemode))
-                    else:
-                        propriete.date_sortie_ancien_locataire = None
+                        if liste[33] is not None:
+                            propriete.date_sortie_ancien_locataire = datetime(*xlrd.xldate_as_tuple(liste[33],data.datemode))
+                        else:
+                            propriete.date_sortie_ancien_locataire = None
 
-                    if liste[17] is not None:
-                        propriete.type_propriete = TypePropriete.objects.filter(pk=int(liste[17])).first() 
-                    else:
-                        propriete.type_propriete = liste[17]
+                        if liste[17] is not None:
+                            propriete.type_propriete = TypePropriete.objects.filter(pk=int(liste[17])).first() 
+                        else:
+                            propriete.type_propriete = liste[17]
                                          
-                    propriete.save()
+                        propriete.save()
                         
-                    rdv = RendezVous.objects.create(
-                        id = liste[0],
-                        ref_lot = liste[9],
-                        ref_rdv_edl = liste[10],
-                        propriete = propriete,
-                        client = liste[1],
-                        date = CreatedDate,
-                        passeur = liste[3],
-                        agent = liste[4],
-                        liste_document_recuperer = liste[34],
-                        consignes_particuliere = liste[35],
-                        info_diverses = liste[36],
-                        statut = liste[37],
-                        couleur = "red",
-                        ancien_client_id = liste[2],
-                        ancien_agent_trigramme = liste[5],
-                        agent_constat = liste[6],
-                        numero = liste[7],
-                        ref_commande = liste[8],
-                        last_update_by =liste[38], 
-                        created_at= Createdat_,
-                        updated_at = updatedat_,
-                    )
-                    if liste[12] is not None:
-                        rdv.intervention = TypeIntervention.objects.filter(pk=int(liste[12])).first()
-                    else:
-                        rdv.intervention = liste[12]
-                    
-                    rdv.save()
+                        rdv = RendezVous.objects.create(
+                            id = liste[0],
+                            ref_lot = liste[9],
+                            ref_rdv_edl = liste[10],
+                            propriete = propriete,
+                            client = liste[1],
+                            date = CreatedDate,
+                            passeur = liste[3],
+                            agent = liste[4],
+                            liste_document_recuperer = liste[34],
+                            consignes_particuliere = liste[35],
+                            info_diverses = liste[36],
+                            statut = liste[37],
+                            couleur = "red",
+                            ancien_client_id = liste[2],
+                            ancien_agent_trigramme = liste[5],
+                            agent_constat = liste[6],
+                            numero = liste[7],
+                            ref_commande = liste[8],
+                            last_update_by =liste[38], 
+                            created_at= Createdat_,
+                            updated_at = updatedat_,
+                        )
+                        if liste[12] is not None:
+                            rdv.intervention = TypeIntervention.objects.filter(pk=int(liste[12])).first()
+                        else:
+                            rdv.intervention = liste[12]
+                        
+                        rdv.save()
 
             #except Exception as e:
                 #return JsonResponse({"status":3},status=401)    

@@ -1,8 +1,4 @@
-import email
-from pyexpat import model
-from statistics import mode
-from tkinter.tix import Tree
-from venv import create
+
 from django.db import models
 
 # Create your models here.
