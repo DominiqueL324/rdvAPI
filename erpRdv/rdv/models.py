@@ -72,6 +72,7 @@ class RendezVous(models.Model):
     numero = models.CharField("Numero",max_length=20,null=True)
     ref_commande = models.CharField("Reference commande",max_length=40,null=True)
     last_update_by = models.IntegerField("Modifier par", null=True)
+    audit_planneur = models.IntegerField("Audit planneur",null=True)
     created_at= models.DateTimeField("Date de creation",auto_now_add=False,null=True)
     updated_at = models.DateTimeField("Date de modification", auto_now_add=False,null=True)
 

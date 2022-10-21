@@ -69,7 +69,7 @@ class ImportApi(APIView):
                     updated_at = CreatedDate
                 ) 
             if int(data_["cible"]) == 3:
-
+                return JsonResponse({"status":data_["agent"]},status=200) 
                 if type(liste[11]) != float:
                     CreatedDate=datetime(1990,1,1,12,12)
                 else:
@@ -153,7 +153,11 @@ class ImportApi(APIView):
                             last_update_by =liste[38], 
                             created_at= Createdat_,
                             updated_at = updatedat_,
-                        )
+                        ) 
+                        for agent in  data_["agent"]:
+                            if liste[4] is not None and agent[0] == int(liste[4]):
+                                rdv.agent = agent['agent']
+                        rdv.save
                         if liste[12] is not None:
                             rdv.intervention = TypeIntervention.objects.filter(pk=int(liste[12])).first()
                         else:

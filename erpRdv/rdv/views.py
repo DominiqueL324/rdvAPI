@@ -141,6 +141,7 @@ class RDVApi(APIView):
                 bailleur = bailleur,
                 locataire = occupant,
                 type = data["type"],
+                ancien_locataire = data['ancien_locataire'],
                 type_propriete = TypePropriete.objects.filter(pk=int(data['type_propriete'])).first()
             )
             couleur = ""
@@ -172,8 +173,8 @@ class RDVApi(APIView):
                 date = data['date'],
                 #passeur = int(data['passeur']),
                 #agent = request.POST.get(),
-                longitude = data['longitude'],
-                latitude = data['latitude'],
+                #longitude = data['longitude'],
+                #latitude = data['latitude'],
                 consignes_particuliere = data['consignes_part'],
                 liste_document_recuperer= data['list_documents'],
                 info_diverses = data['info_diverses'],
@@ -182,6 +183,12 @@ class RDVApi(APIView):
             )
             if request.POST.get("passeur",None) is not None:
                 rdv.passeur = int(data['passeur'])
+            
+            if request.POST.get("longitude",None) is not None:
+                rdv.longitude = int(data['longitude'])
+            
+            if request.POST.get("latitude",None) is not None:
+                rdv.latitude = int(data['latitude'])
             
             if request.POST.get("agent",None) is not None:
                 rdv.agent = int(data['agent'])
@@ -294,10 +301,10 @@ class RDVApiDetails(APIView):
                 rdv.propriete = propriete
                 rdv.client = int(data['client'])
                 rdv.date = data['date']
-                rdv.passeur = request.POST.get("passeur",None)
-                rdv.agent = request.POST.get("agent",None)
-                rdv.longitude = data['longitude']
-                rdv.latitude = data['latitude']
+                #rdv.passeur = request.POST.get("passeur",None)
+                #rdv.agent = request.POST.get("agent",None)
+                #rdv.longitude = data['longitude']
+                #rdv.latitude = data['latitude']
                 rdv.liste_document_recuperer = data['consignes_part'] 
                 rdv.consignes_particuliere = data['list_documents']
                 rdv.info_diverses = data['info_diverses']
@@ -315,7 +322,7 @@ class RDVApiDetails(APIView):
                 if request.POST.get("audit_planneur",None) is not None:
                     rdv.passeur = int(data['audit_planneur'])
 
-                if rdv.agent != old_agent:
+                """if rdv.agent != old_agent:
                     RdvReporteAgent.objects.create(
                         rdv= rdv,
                         ancien_agent = old_agent
@@ -324,7 +331,7 @@ class RDVApiDetails(APIView):
                     RdvReporteDate.objects.create(
                         rdv = rdv,
                         ancienneDate = old_date
-                    )
+                    )"""
 
                 rdv = RendezVous.objects.filter(pk=id)
                 serializer = RendezVousSerializer(rdv,many=True)

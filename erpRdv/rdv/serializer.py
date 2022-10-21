@@ -86,7 +86,7 @@ class ProprieteRepresentation(serializers.RelatedField):
             "numeroSol":  value.numeroSol,
             'bailleur':{"nom":value.bailleur.nom,"prenom":value.bailleur.prenom,"email":value.bailleur.email,"reference":value.bailleur.reference},
             'locataire':{"nom":value.locataire.nom,"prenom":value.locataire.prenom,"email":value.locataire.email,"telephone":value.locataire.telephone},
-            "type_propriete": {"type": value.propriete.type_propriete.type,"statut":value.propriete.type_propriete.statut,"id":value.propriete.type_propriete.id },
+            "type_propriete": {"type": value.type_propriete.type,"statut":value.type_propriete.statut,"id":value.type_propriete.id },
 
         }
         return result
