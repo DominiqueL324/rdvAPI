@@ -23,6 +23,7 @@ from datetime import date, datetime,time,timedelta
 from django.db import transaction, IntegrityError
 from rest_framework.pagination import LimitOffsetPagination,PageNumberPagination
 from django.core.mail import send_mail
+from django.db.models import Q
 
 class RDVApi(APIView):
 
@@ -65,6 +66,10 @@ class RDVApi(APIView):
                 query_set = RendezVous.objects.filter(client=int(val_),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
             else:
                 query_set = RendezVous.objects.filter(client=int(val_))
+            
+            if request.GET.get("paginated",None) is not None:
+                serializer = RendezVousSerializer(query_set,many=True)
+                return Response(serializer.data,status=status.HTTP_200_OK)
 
             page = self.paginator.paginate_queryset(query_set,request,view=self)
             serializer = RendezVousSerializer(page,many=True)
@@ -74,9 +79,45 @@ class RDVApi(APIView):
             val_ = request.GET.get("agent",None)
             query_set=""
             if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
-                 query_set = RendezVous.objects.filter(agent=int(val_),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
+                 query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
             else:
-                query_set = RendezVous.objects.filter(agent=int(val_))
+                query_set = RendezVous.objects.filter( Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)) )
+            
+            if request.GET.get("paginated",None) is not None:
+                serializer = RendezVousSerializer(query_set,many=True)
+                return Response(serializer.data,status=status.HTTP_200_OK)
+
+            page = self.paginator.paginate_queryset(query_set,request,view=self)
+            serializer = RendezVousSerializer(page,many=True)
+            return self.paginator.get_paginated_response(serializer.data)
+
+        if(request.GET.get("constat",None) is not None):
+            val_ = request.GET.get("constat",None)
+            query_set=""
+            if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
+                 query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
+            else:
+                query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)))
+            
+            if request.GET.get("paginated",None) is not None:
+                serializer = RendezVousSerializer(query_set,many=True)
+                return Response(serializer.data,status=status.HTTP_200_OK)
+
+            page = self.paginator.paginate_queryset(query_set,request,view=self)
+            serializer = RendezVousSerializer(page,many=True)
+            return self.paginator.get_paginated_response(serializer.data)
+
+        if(request.GET.get("planneur",None) is not None):
+            val_ = request.GET.get("constat",None)
+            query_set=""
+            if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
+                 query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
+            else:
+                query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)))
+            
+            if request.GET.get("paginated",None) is not None:
+                serializer = RendezVousSerializer(query_set,many=True)
+                return Response(serializer.data,status=status.HTTP_200_OK)
 
             page = self.paginator.paginate_queryset(query_set,request,view=self)
             serializer = RendezVousSerializer(page,many=True)
@@ -89,6 +130,10 @@ class RDVApi(APIView):
                 query_set = RendezVous.objects.filter(passeur=int(val_),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
             else:
                 query_set = RendezVous.objects.filter(passeur=int(val_))
+            
+            if request.GET.get("paginated",None) is not None:
+                serializer = RendezVousSerializer(query_set,many=True)
+                return Response(serializer.data,status=status.HTTP_200_OK)
 
             page = self.paginator.paginate_queryset(query_set,request,view=self)
             serializer = RendezVousSerializer(page,many=True)
@@ -98,6 +143,9 @@ class RDVApi(APIView):
             query_set = RendezVous.objects.filter(date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
             page = self.paginator.paginate_queryset(query_set,request,view=self)
             serializer = RendezVousSerializer(page,many=True)
+            if request.GET.get("paginated",None) is not None:
+                serializer = RendezVousSerializer(query_set,many=True)
+                return Response(serializer.data,status=status.HTTP_200_OK)
             return self.paginator.get_paginated_response(serializer.data)
 
         page = self.paginator.paginate_queryset(self.queryset,request,view=self)
@@ -178,7 +226,7 @@ class RDVApi(APIView):
                 consignes_particuliere = data['consignes_part'],
                 liste_document_recuperer= data['list_documents'],
                 info_diverses = data['info_diverses'],
-                statut=statut_,
+                statut=data['statut'],
                 couleur = couleur
             )
             if request.POST.get("passeur",None) is not None:
@@ -244,6 +292,23 @@ class RDVApiDetails(APIView):
             bailleur = propriete.bailleur
             old_date = rdv.date
             old_agent = rdv.agent
+            if(request.POST.get("cas",None) is not None):
+                rdv.agent_constat = int(data['agent_constat'])
+                rdv.audit_planneur = int(data['audit_planneur'])
+                rdv.save()
+                rdv = RendezVous.objects.filter(pk=id)
+                serializer = RendezVousSerializer(rdv,many=True)
+                return Response(serializer.data,status=status.HTTP_200_OK)
+
+            if(request.POST.get("final",None) is not None):
+                rdv.date = data['date']
+                rdv.statut = 4
+                rdv.couleur = "green"
+                rdv.save()
+                rdv = RendezVous.objects.filter(pk=id)
+                serializer = RendezVousSerializer(rdv,many=True)
+                return Response(serializer.data,status=status.HTTP_200_OK)
+
             with transaction.atomic():
                 #edition du bailleur
                 bailleur.nom=data['nom_bailleur']
@@ -286,15 +351,15 @@ class RDVApiDetails(APIView):
                     statut_ = "Action requise"
                     couleur="blue"
                 elif int(data['statut']) == 4:
-                    statut_ = "Annule"
-                    couleur="yellow"
-                else:
                     statut_ = "Organise"
                     couleur="green"
+                else:
+                    statut_ = "Annulé"
+                    couleur="yellow"
 
                 #edition du RDV
                 rdv.ref_lot = data['ref_lot']
-                rdv.statut = statut_
+                rdv.statut = data['statut']
                 rdv.couleur = couleur
                 rdv.ref_rdv_edl = data['ref_edl']
                 rdv.intervention = TypeIntervention.objects.filter(pk=int(data['intervention'])).first()
