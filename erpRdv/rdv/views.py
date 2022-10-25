@@ -67,6 +67,14 @@ class RDVApi(APIView):
             else:
                 query_set = RendezVous.objects.filter(client=int(val_))
             
+            if request.GET.get("en_charge",None) is not None:
+                cas = int(request.GET.get("en_charge",None))
+                if cas == 0:
+                    query_set = RendezVous.objects.filter(Q(statut=1) | Q(statut=float(1)),client=int(val_))
+                if cas == 1:
+                    query_set = RendezVous.objects.filter(Q(statut=2) | Q(statut=float(2)) | Q(statut=3) | Q(statut=float(3)) | Q(statut=4) | Q(statut=float(4)),client=int(val_))
+
+            
             if request.GET.get("paginated",None) is not None:
                 serializer = RendezVousSerializer(query_set,many=True)
                 return Response(serializer.data,status=status.HTTP_200_OK)
@@ -79,10 +87,17 @@ class RDVApi(APIView):
             val_ = request.GET.get("agent",None)
             query_set=""
             if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
-                 query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
+                 query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_)) | Q(agent_constat=float(val_)) | Q(audit_planneur=int(val_)),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
             else:
-                query_set = RendezVous.objects.filter( Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)) )
+                query_set = RendezVous.objects.filter( Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)) | Q(agent_constat=float(val_)) )
             
+            if request.GET.get("en_charge",None) is not None:
+                cas = int(request.GET.get("en_charge",None))
+                if cas == 0:
+                    query_set = RendezVous.objects.filter(Q(statut=1) | Q(statut=float(1)),(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)) | Q(agent_constat=float(val_))))
+                if cas == 1:
+                    query_set = RendezVous.objects.filter(Q(statut=2) | Q(statut=float(2)) | Q(statut=3) | Q(statut=float(3)) | Q(statut=4) | Q(statut=float(4)), (Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)) | Q(agent_constat=float(val_))))
+
             if request.GET.get("paginated",None) is not None:
                 serializer = RendezVousSerializer(query_set,many=True)
                 return Response(serializer.data,status=status.HTTP_200_OK)
@@ -91,14 +106,22 @@ class RDVApi(APIView):
             serializer = RendezVousSerializer(page,many=True)
             return self.paginator.get_paginated_response(serializer.data)
 
+
         if(request.GET.get("constat",None) is not None):
             val_ = request.GET.get("constat",None)
             query_set=""
             if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
-                 query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
+                query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_)) | Q(agent_constat=float(val_))| Q(audit_planneur=int(val_)),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
             else:
-                query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)))
+                query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_)) | Q(agent_constat=float(val_)) | Q(audit_planneur=int(val_)))
             
+            if request.GET.get("en_charge",None) is not None:
+                cas = int(request.GET.get("en_charge",None))
+                if cas == 0:
+                    query_set = RendezVous.objects.filter(Q(statut=1) | Q(statut=float(1)),(Q(agent=int(val_)) | Q(agent_constat=int(val_)) | Q(agent_constat=float(val_)) | Q(audit_planneur=int(val_))))
+                if cas == 1:
+                    query_set = RendezVous.objects.filter(Q(statut=2) | Q(statut=float(2)) | Q(statut=3) | Q(statut=float(3)) | Q(statut=4) | Q(statut=float(4)),(Q(agent=int(val_)) | Q(agent_constat=int(val_)) | Q(agent_constat=float(val_)) | Q(audit_planneur=int(val_))))
+                    
             if request.GET.get("paginated",None) is not None:
                 serializer = RendezVousSerializer(query_set,many=True)
                 return Response(serializer.data,status=status.HTTP_200_OK)
@@ -111,13 +134,20 @@ class RDVApi(APIView):
             val_ = request.GET.get("constat",None)
             query_set=""
             if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
-                 query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
+                 query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_)) | Q(agent_constat=float(val_))| Q(audit_planneur=int(val_)),date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
             else:
-                query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_))| Q(audit_planneur=int(val_)))
+                query_set = RendezVous.objects.filter(Q(agent=int(val_)) | Q(agent_constat=int(val_)) | Q(agent_constat=float(val_)) | Q(audit_planneur=int(val_)))
             
             if request.GET.get("paginated",None) is not None:
                 serializer = RendezVousSerializer(query_set,many=True)
                 return Response(serializer.data,status=status.HTTP_200_OK)
+            
+            if request.GET.get("en_charge",None) is not None:
+                cas = int(request.GET.get("en_charge",None))
+                if cas == 0:
+                    query_set = RendezVous.objects.filter(Q(statut=1) | Q(statut=float(1)), (Q(agent=int(val_)) | Q(agent_constat=int(val_)) | Q(agent_constat=float(val_)) | Q(audit_planneur=int(val_))))
+                if cas == 1:
+                    query_set = RendezVous.objects.filter(Q(statut=2) | Q(statut=float(2)) | Q(statut=3) | Q(statut=float(3)) | Q(statut=4) | Q(statut=float(4)) , (Q(agent=int(val_)) | Q(agent_constat=int(val_)) | Q(agent_constat=float(val_)) | Q(audit_planneur=int(val_))))
 
             page = self.paginator.paginate_queryset(query_set,request,view=self)
             serializer = RendezVousSerializer(page,many=True)
@@ -134,10 +164,24 @@ class RDVApi(APIView):
             if request.GET.get("paginated",None) is not None:
                 serializer = RendezVousSerializer(query_set,many=True)
                 return Response(serializer.data,status=status.HTTP_200_OK)
+            if request.GET.get("en_charge",None) is not None:
+                cas = int(request.GET.get("en_charge",None))
+                if cas == 0:
+                    query_set = RendezVous.objects.filter(Q(statut=1) | Q(statut=float(1)),passeur=int(val_))
+                if cas == 1:
+                    query_set = RendezVous.objects.filter(Q(statut=2) | Q(statut=float(2)) | Q(statut=3) | Q(statut=float(3)) | Q(statut=4) | Q(statut=float(4)),passeur=int(val_))
 
             page = self.paginator.paginate_queryset(query_set,request,view=self)
             serializer = RendezVousSerializer(page,many=True)
             return self.paginator.get_paginated_response(serializer.data)
+
+        
+        if request.GET.get("en_charge",None) is not None:
+            cas = int(request.GET.get("en_charge",None))
+            if cas == 0:
+                self.queryset = RendezVous.objects.filter(statut=1)
+            if cas == 1:
+                self.queryset = RendezVous.objects.filter(Q(statut=2) | Q(statut=float(2)) | Q(statut=3) | Q(statut=float(3)) | Q(statut=4) | Q(statut=float(4)))
 
         if request.GET.get("debut",None) is not None and request.GET.get("fin",None) is not None:
             query_set = RendezVous.objects.filter(date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'),date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
