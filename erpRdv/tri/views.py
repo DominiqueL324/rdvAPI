@@ -38,8 +38,16 @@ class RDVApi(APIView):
         #role c'est le role du user qui fait la requête il peut être AS,AC,SAL,Client et Admin
         role__ = request.GET.get('role',None)
 
+        #groupe de celui qui envoit la requete
+        #
+
         #filtre (requette)
         query = Q()
+
+        if request.GET.get('salarie',None) is not None:
+            salarie = request.GET.get('salarie',None)
+            query |= Q(passeur=int(salarie)) 
+ 
         #cas d'un agent seulement
         if(request.GET.get('role',None) is not None):
             role_ = request.GET.get('role',None)
@@ -48,8 +56,7 @@ class RDVApi(APIView):
         #cas d'un agent admin client salarie
         if(request.GET.get('statut',None) is not None):
             statut_ = request.GET.get('statut',None)
-            query |= Q(statut=int(statut_))
-            query |= Q(statut=float(statut_))
+            query &= Q(statut=int(statut_))
         
         #cas d'un agent admin client
         if(request.GET.get('client',None) is not None):
@@ -59,18 +66,18 @@ class RDVApi(APIView):
         #cas d'un admin qui veut les RDV
         if(request.GET.get('agent',None) is not None):
             agent = request.GET.get('agent',None)
-            query |= Q(agent=int(agent))
-            query |= Q(agent_secteur=int(agent))
+            query &= Q(agent=int(agent))
+            """query |= Q(agent_constat=int(agent))
             query |= Q(audit_planneur=int(agent))
             query |= Q(agent=float(agent))
-            query |= Q(agent_secteur=float(agent))
-            query |= Q(audit_planneur=float(agent))
+            query |= Q(agent_constat=float(agent))
+            query |= Q(audit_planneur=float(agent))"""
 
         if(request.GET.get('debut',None) is not None):
-            query &= Q(date__gte=datetime.strptime(request.GET.get("debut")))
+            query &= Q(date__gte=datetime.strptime(request.GET.get("debut"),'%Y-%m-%d'))
         
         if(request.GET.get('fin',None) is not None):
-            query &= Q(date__lte=datetime.strptime(request.GET.get("fin")))
+            query &= Q(date__lte=datetime.strptime(request.GET.get("fin"),'%Y-%m-%d'))
         
         query_set=RendezVous.objects.filter(query)
         page = self.paginator.paginate_queryset(query_set,request,view=self)

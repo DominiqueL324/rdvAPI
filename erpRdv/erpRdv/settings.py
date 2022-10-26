@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'intervention',
     'type_propriete',
     'import',
+    'tri',
 ]
 
 MIDDLEWARE = [
@@ -131,7 +132,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 #Pagination
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE':10
+    'PAGE_SIZE':30
 }
 
 #email config

@@ -383,28 +383,30 @@ class RDVApiDetails(APIView):
                 propriete.type_propriete = TypePropriete.objects.filter(pk=int(data['type_propriete'])).first()
                 propriete.save()
 
-                statut_=""
-                couleur = ""
-                if int(data['statut']) == 1:
-                    statut_ = "Attente prise en charge"
-                    couleur="red"
-                elif int(data['statut']) == 2:
-                    statut_ = "Prise en charge Attente horaire"
-                    couleur="orange"
-                elif int(data['statut']) == 3:
-                    statut_ = "Action requise"
-                    couleur="blue"
-                elif int(data['statut']) == 4:
-                    statut_ = "Organise"
-                    couleur="green"
-                else:
-                    statut_ = "Annulé"
-                    couleur="yellow"
+                if request.POST.get('statut',None) is not None:
+                    statut_=""
+                    couleur = ""
+                    if int(data['statut']) == 1:
+                        statut_ = "Attente prise en charge"
+                        couleur="red"
+                    elif int(data['statut']) == 2:
+                        statut_ = "Prise en charge Attente horaire"
+                        couleur="orange"
+                    elif int(data['statut']) == 3:
+                        statut_ = "Action requise"
+                        couleur="blue"
+                    elif int(data['statut']) == 4:
+                        statut_ = "Organise"
+                        couleur="green"
+                    else:
+                        statut_ = "Annulé"
+                        couleur="yellow"
+                    rdv.statut = data['statut']
+                    rdv.couleur = couleur
 
                 #edition du RDV
                 rdv.ref_lot = data['ref_lot']
-                rdv.statut = data['statut']
-                rdv.couleur = couleur
+                
                 rdv.ref_rdv_edl = data['ref_edl']
                 rdv.intervention = TypeIntervention.objects.filter(pk=int(data['intervention'])).first()
                 rdv.propriete = propriete
