@@ -37,26 +37,38 @@ class RDVApi(APIView):
         if(request.GET.get('clientcount',None) is not None):
             val_ = request.GET.get("clientcount",None)
             rdv = RendezVous.objects.filter(client=int(val_)).count()
-            return JsonResponse({"Rdv":rdv},status=200)
+            rdv_att = RendezVous.objects.filter(client=int(val_),statut=1).count()
+            rdv_val = RendezVous.objects.filter(Q(statut=1)|Q(statut=2)|Q(statut=3),client=int(val_)).count()
+            return JsonResponse({"Rdv":rdv,"rdv_attente":rdv_att,"rdv_valide":rdv_val},status=200)
 
         if(request.GET.get('agentcount',None) is not None):
             val_ = request.GET.get("agentcount",None)
-            rdv = RendezVous.objects.filter(agent=int(val_)).count()
-            return JsonResponse({"Rdv":rdv},status=200)
+            rdv = RendezVous.objects.filter(Q(agent_constat=val_)|Q(agent=val_)|Q(audit_planneur=val_)).count()
+            rdv_att = RendezVous.objects.filter(Q(agent_constat=val_)|Q(agent=val_)|Q(audit_planneur=val_),statut=1).count()
+            rdv_val = RendezVous.objects.filter(Q(statut=1)|Q(statut=2)|Q(statut=3)|Q(agent_constat=val_)|Q(agent=val_)|Q(audit_planneur=val_)).count()
+            return JsonResponse({"Rdv":rdv,"rdv_attente":rdv_att,"rdv_valide":rdv_val},status=200)
 
         if(request.GET.get('salariecount',None) is not None):
             val_ = request.GET.get("salariecount",None)
             rdv = RendezVous.objects.filter(passeur=int(val_)).count()
-            return JsonResponse({"Rdv":rdv},status=200)
+            rdv_att = RendezVous.objects.filter(passeur=int(val_),statut=1).count()
+            rdv_val = RendezVous.objects.filter(Q(statut=1)|Q(statut=2)|Q(statut=3),passeur=int(val_)).count()
+            return JsonResponse({"Rdv":rdv,"rdv_attente":rdv_att,"rdv_valide":rdv_val},status=200)
 
         if(request.GET.get('agentcountconst',None) is not None):
-            val_ = request.GET.get("agentcountconst",None)
-            rdv = RendezVous.objects.filter(agent_constat=val_).count()
-            return JsonResponse({"Rdv":rdv},status=200)
+            val_ = int(request.GET.get("agentcountconst",None))
+            rdv = RendezVous.objects.filter(Q(agent_constat=val_)|Q(agent=val_)|Q(audit_planneur=val_)).count()
+            rdv_att = RendezVous.objects.filter(Q(agent_constat=val_)|Q(agent=val_)|Q(audit_planneur=val_),statut=1).count()
+            rdv_val = RendezVous.objects.filter(Q(agent_constat=val_)|Q(agent=val_)|Q(audit_planneur=val_),statut__range=(2,4)).count() 
+            return JsonResponse({"Rdv":rdv,"rdv_attente":rdv_att,"rdv_valide":rdv_val},status=200)
+
 
         if(request.GET.get('admincount',None) is not None):
             rdv = RendezVous.objects.count()
-            return JsonResponse({"Rdv":rdv},status=200)
+            rdv_att = RendezVous.objects.filter(statut=1).count()
+            rdv_val = RendezVous.objects.filter(Q(statut=1)|Q(statut=2)|Q(statut=3)).count() 
+            return JsonResponse({"Rdv":rdv,"rdv_attente":rdv_att,"rdv_valide":rdv_val},status=200)
+            #return JsonResponse({"Rdv":rdv},status=200)
 
 
         if(request.GET.get("user",None) is not None):
